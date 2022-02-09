@@ -8,7 +8,7 @@ from typing import Any
 
 class PriorityQueue:
     def __init__(self):
-        ...  # todo для очереди можно использовать python dict
+        self.priority_queue = {}  # для очереди можно использовать python dict
 
     def enqueue(self, elem: Any, priority: int = 0) -> None:
         """
@@ -17,6 +17,12 @@ class PriorityQueue:
         :param elem: element to be added
         :return: Nothing
         """
+        list_elem = []
+        list_elem.append(elem)
+        self.priority_queue[priority] = list_elem
+        # queue = self.priority_queue.get(priority, [])
+        # queue.append(elem)
+
         return None
 
     def dequeue(self) -> Any:
