@@ -22,6 +22,8 @@ def fib_iterative(n: int) -> int:
     :param n: number of item
     :return: Fibonacci number
     """
+    if n < 0:
+        raise ValueError
     a = 0
     b = 1
     if n == 0:
