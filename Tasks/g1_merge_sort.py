@@ -10,7 +10,7 @@ def merge_func(sorted_left: list[int], sorted_right: list[int]):
         current_left_value = sorted_left[current_left_ind]
         current_right_value = sorted_right[current_right_ind]
 
-        if current_left_value < current_right_value:
+        if current_left_value <= current_right_value:
             sorted_result.append(current_left_value)
             current_left_ind += 1
         else:
