@@ -43,12 +43,15 @@ class BinarySearchTree:
         else:
             current_root = self.root
 
-            while current_root:
+            while current_root.right is None and current_root.left is None:
                 root_key = data.key
                 if root_key == current_root.key:
                     raise KeyError("Дублируются ключи")
 
-                current_root = current_root.right if root_key < current_root.key else current_root.left
+                if root_key > current_root.key:
+                    current_root.right = data if current_root.right is None else current_root
+                else:
+                    current_root.left = data if current_root.left is None else current_root
 
     def remove(self, key: int) -> Optional[Tuple[int, Any]]:
         """
@@ -77,3 +80,19 @@ class BinarySearchTree:
         :return: None
         """
         return None
+
+if __name__ == "__main__":
+    a = BinarySearchTree()
+    b = BinarySearchTree.Node(34, "корень")
+    c = BinarySearchTree.Node(36, "второй")
+    d = BinarySearchTree.Node(30, "третий")
+    a.insert(b)
+    a.insert(c)
+    a.insert(d)
+    print(b)
+    print(c)
+    print(d)
+    print(b.left)
+    print(b.right)
+    print(c.left)
+    print(c.right)
