@@ -17,6 +17,9 @@ class BinarySearchTree:
             self.left = left
             self.right = right
 
+        def __str__(self) -> str:
+            return str(f"узел {self.key} со значением {self.value}")
+
     # @staticmethod
     # def _create_node(key, value: Any, left: Optional[dict] = None, right: Optional[dict] = None) -> dict:
     #     """Фабрика узлов"""
@@ -42,16 +45,17 @@ class BinarySearchTree:
             self.root = data
         else:
             current_root = self.root
+            root_key = data.key
 
-            while current_root.right is None and current_root.left is None:
-                root_key = data.key
-                if root_key == current_root.key:
-                    raise KeyError("Дублируются ключи")
+            if root_key > current_root.key:
+                while current_root.left is not None:
+                    current_root = current_root.left
+                current_root.left = data
+            if root_key < current_root.key:
+                while current_root.right is not None:
+                    current_root = current_root.right
+                current_root.right = data
 
-                if root_key > current_root.key:
-                    current_root.right = data if current_root.right is None else current_root
-                else:
-                    current_root.left = data if current_root.left is None else current_root
 
     def remove(self, key: int) -> Optional[Tuple[int, Any]]:
         """
