@@ -3,15 +3,17 @@ You can do it either with networkx ('cause tree is a graph)
 or with dicts (smth like {'key': 0, value: 123, 'left': {...}, 'right':{...}})
 """
 
-from typing import Any, Optional, Tuple
+from typing import Any, Optional, Tuple, TypeAlias
 
 
 # import networkx as nx
 
+Node: TypeAlias = "BinarySearchTree.Node"
+
 
 class BinarySearchTree:
     class Node:
-        def __init__(self, key: int, value: Any, left: Optional["Node"] = None, right: Optional["Node"] = None):
+        def __init__(self, key: int, value: Any, left: Optional[Node] = None, right: Optional[Node] = None):
             self.key = key
             self.value = value
             self.left = left
@@ -40,21 +42,24 @@ class BinarySearchTree:
         :param data: class Node object as a node of the tree
         :return: None
         """
-
+        data = ...  # fixme именно здесь сделать новый узел вместо аргумента
         if self.root is None:
             self.root = data
         else:
             current_root = self.root
             root_key = data.key
 
-            if root_key > current_root.key:
-                while current_root.left is not None:
-                    current_root = current_root.left
-                current_root.left = data
-            if root_key < current_root.key:
-                while current_root.right is not None:
-                    current_root = current_root.right
-                current_root.right = data
+            while True:
+                if root_key > current_root.key:
+                    if current_root.left is not None:
+                        current_root = current_root.left
+                    else:
+                        current_root.left = data
+                        break
+                if root_key < current_root.key:
+                    while current_root.right is not None:
+                        current_root = current_root.right
+                    current_root.right = data
 
 
     def remove(self, key: int) -> Optional[Tuple[int, Any]]:
