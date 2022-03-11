@@ -4,23 +4,51 @@ or with dicts (smth like {'key': 0, value: 123, 'left': {...}, 'right':{...}})
 """
 
 from typing import Any, Optional, Tuple
+
+
 # import networkx as nx
 
 
 class BinarySearchTree:
-    def __init__(self):
-        ...
+    class Node:
+        def __init__(self, key: int, value: Any, left: Optional["Node"] = None, right: Optional["Node"] = None):
+            self.key = key
+            self.value = value
+            self.left = left
+            self.right = right
 
-    def insert(self, key: int, value: Any) -> None:
+    # @staticmethod
+    # def _create_node(key, value: Any, left: Optional[dict] = None, right: Optional[dict] = None) -> dict:
+    #     """Фабрика узлов"""
+    #     return {
+    #         "key": key,
+    #         "value": value,
+    #         "left": left,
+    #         "right": right
+    #     }
+
+    def __init__(self, root: Optional[Node] = None):
+        self.root = root
+        #  self.root: Optional[Node] = None - так не работает?
+
+    def insert(self, data: Node) -> None:
         """
         Insert (key, value) pair to binary search tree
-
-        :param key: key from pair (key is used for positioning node in the tree)
-        :param value: value associated with key
+        :param data: class Node object as a node of the tree
         :return: None
         """
-        print(key, value)
-        return None
+
+        if self.root is None:
+            self.root = data
+        else:
+            current_root = self.root
+
+            while current_root:
+                root_key = data.key
+                if root_key == current_root.key:
+                    raise KeyError("Дублируются ключи")
+
+                current_root = current_root.right if root_key < current_root.key else current_root.left
 
     def remove(self, key: int) -> Optional[Tuple[int, Any]]:
         """
