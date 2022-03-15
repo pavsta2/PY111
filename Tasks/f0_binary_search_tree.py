@@ -2,18 +2,17 @@
 You can do it either with networkx ('cause tree is a graph)
 or with dicts (smth like {'key': 0, value: 123, 'left': {...}, 'right':{...}})
 """
-
-from typing import Any, Optional, Tuple, TypeAlias
-
+from typing import Any, Optional, Tuple
 
 # import networkx as nx
 
-Node: TypeAlias = "BinarySearchTree.Node"
+# Node: TypeAlias = "BinarySearchTree.Node"
 
 
 class BinarySearchTree:
     class Node:
-        def __init__(self, key: int, value: Any, left: Optional[Node] = None, right: Optional[Node] = None):
+        def __init__(self, key: int, value: Any, left: Optional["BinarySearchTree.Node"] = None,
+                     right: Optional["BinarySearchTree.Node"] = None):
             self.key = key
             self.value = value
             self.left = left
@@ -32,36 +31,48 @@ class BinarySearchTree:
     #         "right": right
     #     }
 
-    def __init__(self, root: Optional[Node] = None):
+    def __init__(self, root: Optional["BinarySearchTree.Node"] = None):
         self.root = root
-        #  self.root: Optional[Node] = None - так не работает?
 
-    def insert(self, data: Node) -> None:
+    @staticmethod
+    def create_node(key: int, value: Any):
+        """
+        Метод создает объект класса Node
+        :param key: ключ
+        :param value: значение
+        :return: node object
+        """
+        return BinarySearchTree.Node(key, value)
+
+    def insert(self, key: int, value: Any) -> None:
         """
         Insert (key, value) pair to binary search tree
         :param data: class Node object as a node of the tree
         :return: None
         """
-        data = ...  # fixme именно здесь сделать новый узел вместо аргумента
+        new_node = self.create_node(key, value)  # fixed именно здесь сделать новый узел вместо аргумента
         if self.root is None:
-            self.root = data
+            self.root = new_node
         else:
             current_root = self.root
-            root_key = data.key
+            root_key = new_node.key
 
             while True:
                 if root_key > current_root.key:
+                    if current_root.right is not None:
+                        current_root = current_root.right
+                    else:
+                        current_root.right = new_node
+                        break
+                if root_key < current_root.key:
                     if current_root.left is not None:
                         current_root = current_root.left
                     else:
-                        current_root.left = data
+                        current_root.left = new_node
                         break
-                if root_key < current_root.key:
-                    while current_root.right is not None:
-                        current_root = current_root.right
-                    current_root.right = data
 
-
+    def __str__(self):
+        ...
     def remove(self, key: int) -> Optional[Tuple[int, Any]]:
         """
         Remove key and associated value from the BST if exists
@@ -90,18 +101,13 @@ class BinarySearchTree:
         """
         return None
 
+
 if __name__ == "__main__":
     a = BinarySearchTree()
-    b = BinarySearchTree.Node(34, "корень")
-    c = BinarySearchTree.Node(36, "второй")
-    d = BinarySearchTree.Node(30, "третий")
-    a.insert(b)
-    a.insert(c)
-    a.insert(d)
-    print(b)
-    print(c)
-    print(d)
-    print(b.left)
-    print(b.right)
-    print(c.left)
-    print(c.right)
+    # b = BinarySearchTree.Node(34, "корень")
+    # c = BinarySearchTree.Node(36, "второй")
+    # d = BinarySearchTree.Node(30, "третий")
+    a.insert(34, "корень")
+    a.insert(36, "второй")
+    a.insert(30, "третий")
+    print(a)
