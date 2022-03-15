@@ -19,7 +19,7 @@ class BinarySearchTree:
             self.right = right
 
         def __str__(self) -> str:
-            return str(f"узел {self.key} со значением {self.value}")
+            return f"узел {self.key} со значением {self.value}"
 
     # @staticmethod
     # def _create_node(key, value: Any, left: Optional[dict] = None, right: Optional[dict] = None) -> dict:
@@ -71,8 +71,18 @@ class BinarySearchTree:
                         current_root.left = new_node
                         break
 
+    def str_rek(self, node: Optional["BinarySearchTree.Node"]):
+        node = self.root
+        if node.left and node.right is not None:
+            return f"{self.str_rek(node.left)}{self.str_rek(node.right)}\n"
+
+
+
     def __str__(self):
-        ...
+        # if self.root is None:
+        #     return "дерево бинарного поиска пустое"
+        return f"{self.root}"
+
     def remove(self, key: int) -> Optional[Tuple[int, Any]]:
         """
         Remove key and associated value from the BST if exists
