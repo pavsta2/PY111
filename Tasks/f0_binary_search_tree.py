@@ -126,6 +126,11 @@ class BinarySearchTree:
         self.is_valid_key(key)
         node_to_remove = self.find_node(key)
 
+        if node_to_remove.left is None and node_to_remove.right is None:
+            self.find_node(key) = None
+        elif node_to_remove.left is not None and node_to_remove.right is None:
+            self.find_node(key)
+
 
 
 
@@ -191,5 +196,5 @@ if __name__ == "__main__":
     a.insert(35, "седьмой")
     print(a)
 
-    print(a.find(35))
+    print(a.find(35), type(a.find(35)))
 
