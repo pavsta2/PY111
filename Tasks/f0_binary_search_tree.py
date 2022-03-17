@@ -3,7 +3,6 @@ You can do it either with networkx ('cause tree is a graph)
 or with dicts (smth like {'key': 0, value: 123, 'left': {...}, 'right':{...}})
 """
 from typing import Any, Optional, Tuple
-from queue import Queue
 
 
 # import networkx as nx
@@ -28,16 +27,6 @@ class BinarySearchTree:
         def __repr__(self):
             return f"({self.key}, {self.value},{self.prev}, {self.left}, {self.right})\n"
 
-    # @staticmethod
-    # def _create_node(key, value: Any, left: Optional[dict] = None, right: Optional[dict] = None) -> dict:
-    #     """Фабрика узлов"""
-    #     return {
-    #         "key": key,
-    #         "value": value,
-    #         "left": left,
-    #         "right": right
-    #     }
-
     def __init__(self, root: Optional["BinarySearchTree.Node"] = None):
         self.root = root
 
@@ -52,6 +41,7 @@ class BinarySearchTree:
         return BinarySearchTree.Node(key, value)
 
     def link_nodes(self, up_node: "BinarySearchTree.Node", down_node: "BinarySearchTree.Node") -> None:
+        """connect two nodes"""
         down_node.prev = up_node
         if up_node.key > down_node.key:
             up_node.left = down_node
@@ -74,6 +64,8 @@ class BinarySearchTree:
             root_key = new_node.key
 
             while True:
+                if root_key == current_root.key:
+                    raise ValueError("Ключ с таким значением уже существует")
                 if root_key > current_root.key:
                     if current_root.right is not None:
                         current_root = current_root.right
@@ -89,7 +81,7 @@ class BinarySearchTree:
 
     def bst_nodes_list(self, node: "BinarySearchTree.Node") -> list:
         """
-        создает список всех узлов дерева
+        создает список всех узлов дерева, для использования в __str__
         :param node: текущий узел
         :return:
         """
@@ -105,9 +97,7 @@ class BinarySearchTree:
     def __str__(self):
         if self.root is None:
             return "дерево бинарного поиска пустое"
-
         current_node = self.root
-
         return f"{self.bst_nodes_list(current_node)}"
 
     def __bool__(self):
@@ -117,12 +107,12 @@ class BinarySearchTree:
             return True
 
     def is_valid_key(self, key) -> None:
+        """Проверка ключа по типу"""
         if not isinstance(key, int):
             raise TypeError("Значение ключа только целочисленное")
-        # if key < 0:
-        #     raise ValueError("Значение ключа не должно быть отрицательным")
 
-    def find_min(self, start_node: "BinarySearchTree.Node") -> "BinarySearchTree.Node":
+    def find_min_right(self, start_node: "BinarySearchTree.Node") -> "BinarySearchTree.Node":
+        """находит ноду с минимальным элементов в правой ветке"""
         current_node = start_node.right
         while current_node.left is not None:
             current_node = current_node.left
@@ -137,60 +127,35 @@ class BinarySearchTree:
         """
         self.is_valid_key(key)
         node_to_remove = self.find_node(key)
-        current_node = self.root
 
         if node_to_remove.left is None and node_to_remove.right is None:
-            if node_to_remove.prev.left == node_to_remove:
+            if node_to_remove == self.root:
+                self.clear()
+            elif node_to_remove.prev.left == node_to_remove:
                 node_to_remove.prev.left = None
             else:
                 node_to_remove.prev.right = None
 
         if node_to_remove.left is not None and node_to_remove.right is None:
-            if node_to_remove.prev.left == node_to_remove:
+            if node_to_remove == self.root:
+                node_to_remove.left.prev = None
+                self.root = node_to_remove.left
+            elif node_to_remove.prev.left == node_to_remove:
                 node_to_remove.prev.left = node_to_remove.left
             else:
                 node_to_remove.prev.right = node_to_remove.left
 
-            # while True:
-            #     if current_node.right == node_to_remove:
-            #         current_node.right = node_to_remove.left
-            #         break
-            #     elif current_node.left == node_to_remove:
-            #         current_node.left = node_to_remove.left
-            #         break
-            #     else:
-            #         if node_to_remove.key > current_node.key:
-            #             current_node = current_node.right
-            #             if current_node is None:
-            #                 break
-            #         else:
-            #             current_node = current_node.left
-            #             if current_node is None:
-            #                 break
-
         if node_to_remove.left is None and node_to_remove.right is not None:
+            if node_to_remove == self.root:
+                node_to_remove.right.prev = None
+                self.root = node_to_remove.right
             if node_to_remove.prev.left == node_to_remove:
                 node_to_remove.prev.left = node_to_remove.right
             else:
                 node_to_remove.prev.right = node_to_remove.right
-            # while True:
-            #     if current_node.right == node_to_remove:
-            #         current_node.right = node_to_remove.right
-            #         break
-            #     elif current_node.left == node_to_remove:
-            #         current_node.left = node_to_remove.right
-            #         break
-            #     else:
-            #         if node_to_remove.key > current_node.key:
-            #             current_node = current_node.right
-            #             if current_node is None:
-            #                 break
-            #         else:
-            #             current_node = current_node.left
-            #             if current_node is None:
-            #                 break
+
         if node_to_remove.left is not None and node_to_remove.right is not None:
-            new_node = self.find_min(node_to_remove)
+            new_node = self.find_min_right(node_to_remove)
             node_to_remove.key = new_node.key
 
             if new_node.prev.left == new_node:
@@ -198,7 +163,9 @@ class BinarySearchTree:
             else:
                 new_node.prev.right = None
 
-    def find_node(self, key: int) -> Optional[Any]:
+        return node_to_remove.key, node_to_remove.value
+
+    def find_node(self, key: int) -> "BinarySearchTree.Node":
         """
         Find node by given key in the BST
 
@@ -206,7 +173,7 @@ class BinarySearchTree:
         :return: node associated with the corresponding key
         """
         if self.root is None:
-            return "Дерево бинарного поиска пустое"
+            raise KeyError("Дерево пустое")
         self.is_valid_key(key)
 
         current_node = self.root
@@ -247,15 +214,19 @@ if __name__ == "__main__":
     # b = BinarySearchTree.Node(34, "корень")
     # c = BinarySearchTree.Node(36, "второй")
     # d = BinarySearchTree.Node(30, "третий")
-    a.insert(34, "корень")
-    a.insert(36, "второй")
-    a.insert(30, "третий")
-    a.insert(102, "четвертый")
-    a.insert(32, "пятый")
-    a.insert(31, "шестой")
-    a.insert(35, "седьмой")
-    print(a)
-    a.remove(36)
+    # a.insert(34, "корень")
+    # a.insert(36, "второй")
+    # a.insert(30, "третий")
+    # a.insert(102, "четвертый")
+    # a.insert(32, "пятый")
+    # a.insert(31, "шестой")
+    # a.insert(35, "седьмой")
+    a.insert(42, 'The meaning of life, the universe and everything.')
+    a.insert(0, 'ZERO!')
+    a.insert(13, "Devil's sign here")
+    # a.insert(13, "Oh no, devil's sign again Oo")
+    a.remove(42)
+    # a.remove(2)
     print(a)
 
     # print(a.find(35), type(a.find(35)))
