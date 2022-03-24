@@ -8,6 +8,7 @@ class MyTestCase(unittest.TestCase):
     def setUp(self):
         priority_queue.clear()
 
+
     def test_clear(self):
         priority_queue.enqueue(3)
         priority_queue.clear()
